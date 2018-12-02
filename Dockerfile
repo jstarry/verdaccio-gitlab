@@ -1,7 +1,10 @@
 FROM node:10-alpine as builder
 
 WORKDIR /opt/verdaccio-gitlab-build
-COPY . .
+COPY package.json ./
+COPY yarn.lock ./
+COPY src ./src
+COPY .babelrc ./
 
 ENV NODE_ENV=production \
     VERDACCIO_BUILD_REGISTRY=https://registry.npmjs.org/
@@ -24,7 +27,7 @@ COPY --from=builder /opt/verdaccio-gitlab-build/build /opt/verdaccio-gitlab/buil
 COPY --from=builder /opt/verdaccio-gitlab-build/package.json /opt/verdaccio-gitlab/package.json
 COPY --from=builder /opt/verdaccio-gitlab-build/node_modules /opt/verdaccio-gitlab/node_modules
 
-ADD conf/docker.yaml /verdaccio/conf/config.yaml
+COPY conf/docker.yaml /verdaccio/conf/config.yaml
 
 # Inherited from parent image
 WORKDIR $VERDACCIO_APPDIR
